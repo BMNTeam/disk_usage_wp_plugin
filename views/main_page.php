@@ -1,6 +1,8 @@
 <?php
 
 function du_plugin_main_page() {
+
+    require_once(DU__PLUGIN_DIR.'/actions/scan_dir_class.php');
    ?>
 
     <div class="container">

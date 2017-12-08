@@ -3,6 +3,7 @@ $ = jQuery.noConflict();
 $( document ).ready(function() {
   // Get API URL directly from page
   var apiUrl = $('#apiUrl').val();
+  var intervalCalls = {};
 
 
   var getFilesButton = $('#getFilesButton').click(function () {
@@ -12,6 +13,7 @@ $( document ).ready(function() {
 
     $progressBar.show();
     $('#temporaryContainer').hide();
+
 
     $searchingResultsContent.html('');
 
@@ -23,20 +25,18 @@ $( document ).ready(function() {
           }
 
           var resJ = JSON.parse(res);
+
+          if(resJ.status === undefined || resJ.status !== 'OK') {
+              console.dir("lol");
+              intervalCalls = setInterval(repeateCallToFetchData, 1000, resJ);
+          }
           var fileList = [];
           var $searchingResultsWrapper = $('#searchingResultsWrapper');
 
           $progressBar.hide();
-
-          resJ[0].sort(function (a, b) {
-            return a.length;
-          });
-
-          //add this string
-          console.dir(resJ);
-
+          
           // Create HTML list with returned data
-          fileList = buildFiles(resJ[0]);
+          fileList = buildFiles(resJ);
 
           $searchingResultsContent.append(fileList);
           $searchingResultsWrapper.show();
@@ -47,7 +47,26 @@ $( document ).ready(function() {
     )
   });
 
+  // TODO set own variable
+  function repeateCallToFetchData(prevResponse) {
+    var request = JSON.stringify(prevResponse);
+    console.dir(request);
+
+    $.post(
+        apiUrl, { data: request },  function (res, err) {
+          var resJ = JSON.parse(res);
+          if (resJ.status !== undefined && resJ.status === 'OK') {
+            //clearInterval(intervalCalls);
+            return resJ;
+          }
+
+        }
+    )
+  }
+
+
 });
+
 
 // Add event listeners to lists that have unordered list inside
 // prevented propagation
