@@ -26,17 +26,15 @@ $( document ).ready(function() {
 
           var resJ = JSON.parse(res);
 
-          if(resJ.status === undefined || resJ.status !== 'OK') {
-              console.dir("lol");
-              intervalCalls = setInterval(repeateCallToFetchData, 1000, resJ);
-          }
+          isNotSuccessfulRequest(resJ);
+
           var fileList = [];
           var $searchingResultsWrapper = $('#searchingResultsWrapper');
 
           $progressBar.hide();
           
           // Create HTML list with returned data
-          fileList = buildFiles(resJ);
+          fileList = buildFiles(resJ.files);
 
           $searchingResultsContent.append(fileList);
           $searchingResultsWrapper.show();
@@ -46,6 +44,12 @@ $( document ).ready(function() {
         }
     )
   });
+
+  function isNotSuccessfulRequest(resJ) {
+    if(resJ.status === undefined || resJ.status !== 'OK') {
+      intervalCalls = setInterval(repeateCallToFetchData, 1000, resJ);
+    }
+  }
 
   // TODO set own variable
   function repeateCallToFetchData(prevResponse) {
@@ -79,17 +83,19 @@ function addEventListenerToFolders() {
   $('ul >li').find($('ul')).toggleClass('hidden');
 }
 
+
 // Create list of folders and subfolders using recursion
 function buildFiles(files) {
+  console.dir(files);
   // Return undefined if there are no files to process;
-  if (!files || !files.length ) {
-    return ;
-  }
+  if(files === undefined) { return }
+
 
   // Create the container UL for the files in this level.
   var list = $('<ul>');
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
+  for (var key in files) {
+    console.dir(key);
+
 
     // Create an LI for each file and add it to the container
     var item = $('<li>');
@@ -98,14 +104,14 @@ function buildFiles(files) {
     list.append(item);
     // Add  content to the item LI
     item.append($('<i class="dashicons dashicons-media-default"></i>'));
-    item.append($('<span>' +file.file_name + '</span>'));
-    item.append($('<span class="du_size">' +file.file_size + ' bytes</span>'));
+    item.append($('<span>' +files[key].file_name + '</span>'));
+    item.append($('<span class="du_size">' +files[key].file_size + ' bytes</span>'));
 
 
     // if have nested object do the same
-    if(files[i].length) {
-      item.html('<i class="dashicons dashicons-category"></i></i>' + files[i][0].dir_name);
-      var childrenList = buildFiles(files[i]);
+    if(files[key].length) {
+      item.html('<i class="dashicons dashicons-category"></i></i>' + key);
+      var childrenList = buildFiles(files[key]);
     }
 
     if (childrenList) {

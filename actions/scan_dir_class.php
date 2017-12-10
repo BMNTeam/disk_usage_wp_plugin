@@ -3,8 +3,9 @@
 class Scan_dir
 {
     public $dir;
-    private $start_time;
     public $files = array();
+    private $start_time;
+
 
     function __construct($dir)
     {
@@ -12,7 +13,6 @@ class Scan_dir
         $this->start_time = time();
     }
 
-    //$dir = get_template_directory();
 
     public function get_last_finished_folder($previous_array)
     {
@@ -27,7 +27,6 @@ class Scan_dir
      * @param string $dir <p> Direcroty to search </p> default
      * @return array with files and subfolders where subfolder name
      * returns as a key
-     *
      */
     public function find_all_files_and_directories($dir = null)
     {
@@ -36,7 +35,7 @@ class Scan_dir
 
         // If no given argument set default root to default object
         // specified directory
-        if(is_null($dir)) {
+        if (is_null($dir)) {
             $dir = $this->dir;
         }
 
@@ -53,31 +52,38 @@ class Scan_dir
                     'file_size' => filesize($full_address) / 1024,
                     'full_address' => $full_address
                 );
-
-
                 continue;
             } else {
-                $folders[$file] = $this->find_all_files_and_directories($dir . DIRECTORY_SEPARATOR . $file);
+                $folders[$file][] = $this->find_all_files_and_directories($dir . DIRECTORY_SEPARATOR . $file);
             }
         }
-        $this->files = $folders;
+        $this->files['files'] = $folders;
         return $folders;
+    }
+
+    /**
+     * If everything was OK return JSON with status = OK
+     * @return string of json with success status
+     */
+
+    public function return_files_in_json()
+    {
+        if (empty($this->files)) {
+            exit("Try to find files and directories first");
+        } else {
+            $this->files['status'] = 'OK';
+            return json_encode($this->files);
+        }
     }
 
 
     public function make_dir_structure_with_execution_limit($dir)
     {
 
-
-
-
     }
-};
+}
 
-//$file_db = new Scan_dir($dir);
-//echo "<br>";
-//echo "<br>";
-//echo "<br>";
-//$files = $file_db->find_all_files_and_directories();
-//echo "<pre>"; print_r($file_db->files); echo "</pre>";
+;
+
+
 
