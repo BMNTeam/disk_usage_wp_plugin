@@ -24,7 +24,7 @@ class Scan_dir
 
     /**
      * Recursively returns all files and subfolders within given root
-     * @param string $dir <p> Direcroty to search </p> default
+     * @param string $dir <p> Directory to search </p> default
      * @return array with files and subfolders where subfolder name
      * returns as a key
      */
@@ -49,12 +49,12 @@ class Scan_dir
             if (is_file($full_address)) {
                 $folders[] = array(
                     'file_name' => $file,
-                    'file_size' => filesize($full_address) / 1024,
+                    'file_size' => round(filesize($full_address) / 1024,4),
                     'full_address' => $full_address
                 );
                 continue;
             } else {
-                $folders[$file][] = $this->find_all_files_and_directories($dir . DIRECTORY_SEPARATOR . $file);
+                $folders['folder_' . $file] = $this->find_all_files_and_directories($dir . DIRECTORY_SEPARATOR . $file);
             }
         }
         $this->files['files'] = $folders;

@@ -4,7 +4,7 @@
 require($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 require_once('scan_dir_class.php');
 
-$dir = get_template_directory();
+$dir =  get_template_directory();
 
 $find_folder = new Scan_dir($dir);
 // Todo protect an API add NONCE field
